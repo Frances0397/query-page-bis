@@ -14,9 +14,9 @@ export default function TaskList({ items, subitems }) {
         <View>
             {items.map((item, index) => (
                 <List.Accordion key={index} title={item.ID + ' - ' + item.description}>
-                    {/* {subitems
-                        .filter((subitem) => subitem.father === item.item)
-                        .map((subitem, subindex) => (<List.Item key={subindex} title={subitem.title} />))} */}
+                    {subitems
+                        .filter((subitem) => subitem.ID === item.ID)
+                        .map((subitem, subindex) => (<List.Item key={subindex} title={subitem.sub_id + ' - ' + subitem.subtask_description} />))}
                 </List.Accordion>
             ))}
         </View>

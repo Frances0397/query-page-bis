@@ -14,12 +14,26 @@ import { Card, Button } from 'react-native-paper';
 import { ScrollView } from 'react-native-web';
 import axios from 'axios';
 
+//Filter card TEMP
+import { SegmentedButtons } from 'react-native-paper';
+import { Dropdown } from 'react-native-element-dropdown';
+
+
 import TaskList from './fragments/taskList';
 
 export default function App() {
   const [fatherArr, setFatherArr] = useState([]);
   const [childArr, setChildArr] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterValue, setFilterValue] = useState("closed");
+  const [resources, setResources] = useState([]);
+  const [resource, setResource] = useState({});
+
+  useEffect(() => {
+    fetchResources().then((result) => {
+      setResources(result);
+    }, [])
+  });
 
   useEffect(() => {
 
@@ -37,7 +51,7 @@ export default function App() {
       setLoading(false);
     })
 
-  }, []);
+  }, [filterValue]);
 
   useEffect(() => {
     console.log("TASK -----------");
@@ -45,47 +59,32 @@ export default function App() {
   }, [fatherArr])
 
   const fetchFather = async () => {
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     const father = [
-    //       { item: 1, title: "test 1" },
-    //       { item: 2, title: "test 2" },
-    //       { item: 3, title: "test 3" },
-    //       { item: 4, title: "test 4" },
-    //       { item: 5, title: "test 5" }
-    //     ];
-    //     resolve(father)
-    //   }, 1000);
-    // })
-
-    //get current month
-    let d = new Date();
-    let n = d.getMonth();
-    console.log(n);
-
-    // let res = await axios.get(`https://gtr-express.onrender.com/task/all/${n}`);
-    let res = await axios.get(`http://localhost:3000/task/closed`);
+    let res = await axios.get(`https://gtr-express.onrender.com/task/${filterValue}`);
     return res.data;
   }
 
   const fetchChild = async () => {
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     const child = [
-    //       { father: 1, item: 1, title: "test 1" },
-    //       { father: 1, item: 2, title: "test 2" },
-    //       { father: 2, item: 1, title: "test 3" },
-    //       { father: 2, item: 2, title: "test 4" },
-    //       { father: 2, item: 3, title: "test 5" },
-    //       { father: 3, item: 1, title: "test 6" },
-    //       { father: 4, item: 1, title: "test 7" },
-    //       { father: 4, item: 2, title: "test 8" },
-    //       { father: 4, item: 3, title: "test 9" },
-    //       { father: 4, item: 4, title: "test 10" }
-    //     ];
-    //     resolve(child);
-    //   }, 1000)
-    // })
+    let res = await axios.get(`https://gtr-express.onrender.com/subtask_view/${filterValue}`);
+    return res.data;
+  }
+
+  const fetchResources = async () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const resources = [
+          { fullname: "Nome 1" },
+          { fullname: "Nome 2" },
+          { fullname: "Nome 3" },
+          { fullname: "Nome 4" },
+          { fullname: "Nome 5" },
+          { fullname: "Nome 6" },
+          { fullname: "Nome 7" },
+          { fullname: "Nome 8" },
+          { fullname: "Nome 9" }
+        ];
+        resolve(resources);
+      }, 1000)
+    })
   }
 
   return (
@@ -110,7 +109,89 @@ export default function App() {
           <Card>
             <Card.Title title="Seleziona visualizzazione" />
             <Card.Content>
-              <Button>Task chiusi</Button>
+              <SegmentedButtons
+                value={filterValue}
+                onValueChange={setFilterValue}
+                buttons={[
+                  {
+                    value: 'active',
+                    label: 'Attivi',
+                  },
+                  {
+                    value: 'closed',
+                    label: 'Chiusi',
+                  },
+                  {
+                    value: 'all',
+                    label: 'Tutti'
+                  },
+                ]}
+              />
+              <View style={{ flexDirection: 'row' }}>
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={resources}
+                  search
+                  labelField="fullname"
+                  valueField="fullname"
+                  value={resource}
+                  onChange={item => setResource(item.fullname)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={resources}
+                  search
+                  labelField="fullname"
+                  valueField="fullname"
+                  value={resource}
+                  onChange={item => setResource(item.fullname)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={resources}
+                  search
+                  labelField="fullname"
+                  valueField="fullname"
+                  value={resource}
+                  onChange={item => setResource(item.fullname)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={resources}
+                  search
+                  labelField="fullname"
+                  valueField="fullname"
+                  value={resource}
+                  onChange={item => setResource(item.fullname)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={resources}
+                  search
+                  labelField="fullname"
+                  valueField="fullname"
+                  value={resource}
+                  onChange={item => setResource(item.fullname)} />
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+
+              </View>
             </Card.Content>
             <Card.Actions>
               <Button>Visualizza</Button>
@@ -123,7 +204,6 @@ export default function App() {
         </View>
       </View>
     </SafeAreaProvider>
-
   );
 }
 
@@ -153,5 +233,12 @@ const styles = StyleSheet.create({
   },
   loading: {
     marginVertical: 25,
+  },
+  dropdownStyle: {
+    marginLeft: 20,
+    marginVertical: 10,
+    borderRadius: 15,
+    minWidth: 220,
+    showVerticalScrollIndicator: false
   }
 });
