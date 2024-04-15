@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // Drawer component TEMP
 import { Drawer } from 'react-native-paper';
@@ -17,6 +17,7 @@ import axios from 'axios';
 //Filter card TEMP
 import { SegmentedButtons } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
+import { DatePickerModal } from 'react-native-paper-dates';
 
 
 import TaskList from './fragments/taskList';
@@ -26,14 +27,39 @@ export default function App() {
   const [childArr, setChildArr] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterValue, setFilterValue] = useState("closed");
+  //FILTRI VISUALIZZAZIOME
   const [resources, setResources] = useState([]);
   const [resource, setResource] = useState({});
+  const [commissions, setCommissions] = useState([]);
+  const [commission, setCommission] = useState({});
+  const [customers, setCustomers] = useState([]);
+  const [customer, setCustomer] = useState("");
+  const [range, setRange] = useState({ startDate: undefined, endDate: undefined });
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  const onDismissDatePicker = useCallback(() => {
+    setDatePickerOpen(false);
+  }, [setDatePickerOpen]);
+
+  const onConfirmDateRange = useCallback(
+    ({ startDate, endDate }) => {
+      setDatePickerOpen(false);
+      setRange({ startDate, endDate });
+    },
+    [setDatePickerOpen, setRange]
+  );
 
   useEffect(() => {
     fetchResources().then((result) => {
       setResources(result);
-    }, [])
-  });
+    })
+    fetchCommissions().then((result) => {
+      setCommissions(result);
+    })
+    fetchCustomers().then((result) => {
+      setCustomers(result);
+    })
+  }, []);
 
   useEffect(() => {
 
@@ -69,22 +95,18 @@ export default function App() {
   }
 
   const fetchResources = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const resources = [
-          { fullname: "Nome 1" },
-          { fullname: "Nome 2" },
-          { fullname: "Nome 3" },
-          { fullname: "Nome 4" },
-          { fullname: "Nome 5" },
-          { fullname: "Nome 6" },
-          { fullname: "Nome 7" },
-          { fullname: "Nome 8" },
-          { fullname: "Nome 9" }
-        ];
-        resolve(resources);
-      }, 1000)
-    })
+    let res = await axios.get('https://gtr-express.onrender.com/resources');
+    return res.data;
+  }
+
+  const fetchCommissions = async () => {
+    let res = await axios.get('https://gtr-express.onrender.com/commissions');
+    return res.data;
+  }
+
+  const fetchCustomers = async () => {
+    let res = await axios.get('https://gtr-express.onrender.com/customers');
+    return res.data;
   }
 
   return (
@@ -135,6 +157,46 @@ export default function App() {
                   showsVerticalScrollIndicator={false}
                   itemContainerStyle={{ borderRadius: 15 }}
                   data={resources}
+                  placeholder="Risorsa"
+                  search
+                  labelField="fullname"
+                  valueField="fullname"
+                  value={resource}
+                  onChange={item => setResource(item.fullname)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={commissions}
+                  placeholder="Commessa"
+                  search
+                  labelField="commission"
+                  valueField="commission"
+                  value={commission}
+                  onChange={item => setCommission(item.commission)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={customers}
+                  placeholder="Cliente"
+                  search
+                  labelField="nome"
+                  valueField="nome"
+                  value={customer}
+                  onChange={item => setCustomer(item.nome)} />
+                <Dropdown
+                  style={styles.dropdownStyle}
+                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
+                  inputSearchStyle={{ borderRadius: 5 }}
+                  showsVerticalScrollIndicator={false}
+                  itemContainerStyle={{ borderRadius: 15 }}
+                  data={resources}
+                  placeholder="Partner"
                   search
                   labelField="fullname"
                   valueField="fullname"
@@ -147,42 +209,7 @@ export default function App() {
                   showsVerticalScrollIndicator={false}
                   itemContainerStyle={{ borderRadius: 15 }}
                   data={resources}
-                  search
-                  labelField="fullname"
-                  valueField="fullname"
-                  value={resource}
-                  onChange={item => setResource(item.fullname)} />
-                <Dropdown
-                  style={styles.dropdownStyle}
-                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
-                  inputSearchStyle={{ borderRadius: 5 }}
-                  showsVerticalScrollIndicator={false}
-                  itemContainerStyle={{ borderRadius: 15 }}
-                  data={resources}
-                  search
-                  labelField="fullname"
-                  valueField="fullname"
-                  value={resource}
-                  onChange={item => setResource(item.fullname)} />
-                <Dropdown
-                  style={styles.dropdownStyle}
-                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
-                  inputSearchStyle={{ borderRadius: 5 }}
-                  showsVerticalScrollIndicator={false}
-                  itemContainerStyle={{ borderRadius: 15 }}
-                  data={resources}
-                  search
-                  labelField="fullname"
-                  valueField="fullname"
-                  value={resource}
-                  onChange={item => setResource(item.fullname)} />
-                <Dropdown
-                  style={styles.dropdownStyle}
-                  containerStyle={{ borderRadius: 10, showVerticalScrollIndicator: false }}
-                  inputSearchStyle={{ borderRadius: 5 }}
-                  showsVerticalScrollIndicator={false}
-                  itemContainerStyle={{ borderRadius: 15 }}
-                  data={resources}
+                  placeholder="Responsabile"
                   search
                   labelField="fullname"
                   valueField="fullname"
@@ -190,7 +217,17 @@ export default function App() {
                   onChange={item => setResource(item.fullname)} />
               </View>
               <View style={{ flexDirection: 'row' }}>
-
+                <Text style={styles.filterLabel}>Seleziona periodo</Text>
+                <Button onPress={() => setDatePickerOpen(true)} icon='calendar' style={styles.datePickerButton} >Calendario</Button>
+                <DatePickerModal
+                  locale="en"
+                  mode="range"
+                  visible={datePickerOpen}
+                  onDismiss={onDismissDatePicker}
+                  startDate={range.startDate}
+                  endDate={range.endDate}
+                  onConfirm={onConfirmDateRange}
+                />
               </View>
             </Card.Content>
             <Card.Actions>
@@ -240,5 +277,14 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     minWidth: 220,
     showVerticalScrollIndicator: false
+  },
+  filterLabel: {
+    marginLeft: 20,
+    fontWeight: '700',
+    marginTop: 10
+  },
+  datePickerButton: {
+    marginLeft: 20,
+    marginTop: 2
   }
 });
