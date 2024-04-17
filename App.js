@@ -19,8 +19,14 @@ import { SegmentedButtons } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 import { DatePickerModal } from 'react-native-paper-dates';
 
+//export to Excel TEMP
+// import { writeFile, readFile } from 'react-native-fs';
+// import XLSX from 'xlsx';
+// import * as FileSystem from 'expo-file-system';
+import { saveAs } from 'file-saver';
 
 import TaskList from './fragments/taskList';
+import { jsx } from 'react/jsx-runtime';
 
 export default function App() {
   const [fatherArr, setFatherArr] = useState([]);
@@ -107,6 +113,26 @@ export default function App() {
   const fetchCustomers = async () => {
     let res = await axios.get('https://gtr-express.onrender.com/customers');
     return res.data;
+  }
+
+  const exportDataToExcel = () => {
+    saveReportFile(childArr).then(() => {
+      console.log("fatto?");
+    })
+
+  }
+
+  const saveReportFile = async (data, directoryUri) => {
+    try {
+      const obj = { "data": data };
+      console.log(obj);
+
+      let result = await axios.post('http://localhost:3000/export/excel', obj, { responseType: 'blob' });
+      saveAs(result.data, "test.xlsx");
+      console.log(result);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return (
@@ -228,6 +254,9 @@ export default function App() {
                   endDate={range.endDate}
                   onConfirm={onConfirmDateRange}
                 />
+              </View>
+              <View style={{ width: 150, marginLeft: 15, marginTop: 15 }}>
+                <Button icon='table' mode='contained-tonal' onPress={exportDataToExcel}>Esporta</Button>
               </View>
             </Card.Content>
             <Card.Actions>
